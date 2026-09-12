@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Məni sevirsən? 🤍</title>
+<style>
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+body {
+    margin: 0;
+    min-height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: Arial, sans-serif;
+    background:
+        radial-gradient(circle at 20% 20%, #ffffff 0%, transparent 25%),
+        radial-gradient(circle at 80% 80%, #ffc4d9 0%, transparent 30%),
+        linear-gradient(135deg, #fff0f6, #ffd3e3);
+}
+/* Arxadakı ürəklər */
+.hearts {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+}
+.heart {
+    position: absolute;
+    bottom: -50px;
+    font-size: 25px;
+    opacity: .55;
+    animation: floating 8s linear infinite;
+}
+@keyframes floating {
+    0% {
+        transform: translateY(0) rotate(0);
+        opacity: 0;
+    }
+    15% {
+        opacity: .6;
+    }
+    100% {
+        transform: translateY(-115vh) rotate(30deg);
+        opacity: 0;
+    }
+}
+/* Əsas kart */
+.card {
+    width: 90%;
+    max-width: 500px;
+    padding: 35px 25px;
+    text-align: center;
+    background: rgba(255,255,255,.72);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,.9);
+    border-radius: 30px;
+    box-shadow:
+        0 25px 70px rgba(150,50,90,.2);
+    position: relative;
+    z-index: 2;
+}
+.big-heart {
+    font-size: 65px;
+    animation: heartbeat 1.5s infinite;
+}
+@keyframes heartbeat {
+    50% {
+        transform: scale(1.15);
+    }
+}
+h1 {
+    color: #552536;
+    font-size: clamp(32px, 8vw, 48px);
+    margin: 15px 0 10px;
+}
+.subtitle {
+    color: #865567;
+    font-size: 18px;
+    margin-bottom: 28px;
+}
+.buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+button {
+    border: none;
+    border-radius: 50px;
+    padding: 16px 23px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 10px 25px rgba(100,30,60,.15);
+    transition: transform .2s;
+}
+button:active {
+    transform: scale(.94);
+}
+#yes {
+    color: white;
+    background:
+        linear-gradient(135deg,#ff5c91,#ff3377);
+}
+#no {
+    background: white;
+    color: #a05270;
+}
+/* Final səhifə */
+.final {
+    display: none;
+    animation: appear .7s ease;
+}
+.final-heart {
+    font-size: 75px;
+}
+.final h2 {
+    color: #e8336d;
+    font-size: clamp(27px,7vw,42px);
+    line-height: 1.2;
+}
+.final p {
+    color: #795061;
+    font-size: 18px;
+}
+@keyframes appear {
+    from {
+        opacity: 0;
+        transform: scale(.75);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+/* Partlayış ürəkləri */
+.explosion {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    font-size: 25px;
+    animation: explode 1.4s forwards;
+    pointer-events: none;
+    z-index: 10;
+}
+@keyframes explode {
+    from {
+        transform: translate(-50%,-50%) scale(.5);
+        opacity: 1;
+    }
+    to {
+        transform:
+            translate(
+                var(--x),
+                var(--y)
+            )
+            scale(1.4);
+        opacity: 0;
+    }
+}
+</style>
+</head>
+<body>
+<!-- Arxa fon ürəkləri -->
+<div class="hearts" id="hearts"></div>
+<div class="card">
+    <!-- SUAL -->
+    <div id="question">
+        <div class="big-heart">
+            🤍
+        </div>
+        <h1>
+            Məni sevirsən?
+        </h1>
+        <div class="subtitle">
+            Bir dənə səmimi cavab istəyirəm... 🥺
+        </div>
+        <div class="buttons">
+            <button id="yes">
+                Səni çox sevirəm 💗
+            </button>
+            <button id="no">
+                Yox 🙈
+            </button>
+        </div>
+        <p id="hint"></p>
+    </div>
+    <!-- CAVABDAN SONRA -->
+    <div class="final" id="final">
+        <div class="final-heart">
+            💖
+        </div>
+        <h2>
+            ƏMİN OLUN Kİ<br>
+            RÜSTƏM SƏNİ DAHA ÇOX SEVİR 🤍
+        </h2>
+        <p>
+            Bu cavab ürəyimə çox yaraşdı. 🥹✨
+        </p>
+        <p>
+            Sənin üçün hazırlanmış balaca bir sürpriz 💌
+        </p>
+    </div>
+</div>
+<script>
+const yes = document.getElementById("yes");
+const no = document.getElementById("no");
+const hint = document.getElementById("hint");
+const question = document.getElementById("question");
+const final = document.getElementById("final");
+/* "YOX" DÜYMƏSİ QAÇIR */
+function escapeNo() {
+    const margin = 20;
+    const maxX =
+        window.innerWidth -
+        no.offsetWidth -
+        margin;
+    const maxY =
+        window.innerHeight -
+        no.offsetHeight -
+        margin;
+    no.style.position = "fixed";
+    no.style.left =
+        (margin + Math.random() * maxX) + "px";
+    no.style.top =
+        (margin + Math.random() * maxY) + "px";
+    hint.innerHTML =
+        "Yox düyməsi bir az utancaqdır... 😅";
+    /* Bəli düyməsi bir az böyüsün */
+    yes.animate(
+        [
+            { transform: "scale(1)" },
+            { transform: "scale(1.08)" },
+            { transform: "scale(1)" }
+        ],
+        {
+            duration: 400
+        }
+    );
+}
+/* Telefonda toxunanda */
+no.addEventListener(
+    "touchstart",
+    function(event) {
+        event.preventDefault();
+        escapeNo();
+    },
+    { passive:false }
+);
+/* Kompüterdə üstünə gələndə */
+no.addEventListener(
+    "mouseenter",
+    escapeNo
+);
+/* Klikləməyə də imkan verməsin */
+no.addEventListener(
+    "click",
+    escapeNo
+);
+/* "SƏNİ ÇOX SEVİRƏM" */
+yes.addEventListener(
+    "click",
+    function() {
+        question.style.display = "none";
+        final.style.display = "block";
+        createExplosion();
+    }
+);
+/* Ürək partlayışı */
+function createExplosion() {
+    const emojis = [
+        "💗",
+        "💖",
+        "💕",
+        "🤍",
+        "💞",
+        "✨"
+    ];
+    for(let i = 0; i < 45; i++) {
+        const heart =
+            document.createElement("div");
+        heart.className = "explosion";
+        heart.innerText =
+            emojis[
+                Math.floor(
+                    Math.random() *
+                    emojis.length
+                )
+            ];
+        heart.style.setProperty(
+            "--x",
+            (Math.random() * 900 - 450) + "px"
+        );
+        heart.style.setProperty(
+            "--y",
+            (Math.random() * 800 - 400) + "px"
+        );
+        document.body.appendChild(heart);
+        setTimeout(
+            () => heart.remove(),
+            1500
+        );
+    }
+}
+/* Arxa fonda hərəkət edən ürəklər */
+const heartContainer =
+    document.getElementById("hearts");
+const heartTypes =
+    ["♡","♥","🤍","💗","💕"];
+for(let i = 0; i < 25; i++) {
+    const heart =
+        document.createElement("span");
+    heart.className = "heart";
+    heart.innerText =
+        heartTypes[
+            Math.floor(
+                Math.random() *
+                heartTypes.length
+            )
+        ];
+    heart.style.left =
+        Math.random() * 100 + "%";
+    heart.style.animationDuration =
+        (7 + Math.random() * 8) + "s";
+    heart.style.animationDelay =
+        (-Math.random() * 12) + "s";
+    heartContainer.appendChild(heart);
+}
+</script>
+</body>
+</html>
